@@ -8,8 +8,8 @@ const nextConfig: NextConfig = {
   ...(isGithubPages
     ? {
         output: 'export',
-        basePath: '/qms',
-        assetPrefix: '/qms/',
+        basePath: '/qms-pilot',
+        assetPrefix: '/qms-pilot/',
         trailingSlash: true,
         images: { unoptimized: true },
       }
