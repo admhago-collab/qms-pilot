@@ -72,8 +72,10 @@ export class InspectionStandardService {
     ]);
 
     return {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      items: items.map((s: any) => ({ ...s, itemCount: s._count.items, _count: undefined })),
+      items: items.map((s: { _count: { items: number }; [key: string]: unknown }) => {
+        const { _count, ...rest } = s;
+        return { ...rest, itemCount: _count.items };
+      }),
       total,
       page,
       limit,
@@ -211,7 +213,10 @@ export class InspectionStandardService {
   }
 
   async addItem(standardId: string, dto: CreateStandardItemDto) {
-    await this.findOne(standardId);
+    const standard = await this.findOne(standardId);
+    if (standard.status !== InspectionStandardStatus.DRAFT) {
+      throw new BadRequestException('Items can only be added to DRAFT standards');
+    }
 
     const maxSeq = await this.prisma.inspectionStandardItem.findFirst({
       where: { standardId, deletedAt: null },
@@ -332,21 +337,22 @@ export class InspectionStandardService {
     };
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private deserializeItems(standard: any) {
+  private deserializeItems<T extends { items: Array<{ applicableTypes: string | null }> }>(
+    standard: T,
+  ) {
     return {
       ...standard,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      items: (standard.items ?? []).map((item: any) => this.deserializeItem(item)),
+      items: standard.items.map((item) => this.deserializeItem(item)),
     };
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private deserializeItem(item: any) {
+  private deserializeItem<T extends { applicableTypes: string | null }>(
+    item: T,
+  ): Omit<T, 'applicableTypes'> & { applicableTypes: string[] | null } {
     return {
       ...item,
       applicableTypes: item.applicableTypes
-        ? JSON.parse(item.applicableTypes) as string[]
+        ? (JSON.parse(item.applicableTypes) as string[])
         : null,
     };
   }
