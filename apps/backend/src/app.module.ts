@@ -26,6 +26,7 @@ import { MasterModule } from './modules/master';
 import { SupplierModule } from './modules/supplier';
 import { HrModule } from './modules/hr';
 import { ChangeModule } from './modules/change';
+import { InspectionStandardModule } from './modules/inspection-standard';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { ChangeModule } from './modules/change';
     SupplierModule,
     HrModule,
     ChangeModule,
+    InspectionStandardModule,
   ],
   controllers: [],
   providers: [],
