@@ -67,6 +67,8 @@ export class PrismaService implements OnModuleInit, OnModuleDestroy {
   get employeeCompetency(): any { return this.client.employeeCompetency; }
   get trainingRecord(): any { return this.client.trainingRecord; }
   get changeRequest(): any { return this.client.changeRequest; }
+  get inspectionStandard(): any { return this.client.inspectionStandard; }
+  get inspectionStandardItem(): any { return this.client.inspectionStandardItem; }
 
   $queryRaw(...args: any[]) {
     return (this.client.$queryRaw as any)(...args);
