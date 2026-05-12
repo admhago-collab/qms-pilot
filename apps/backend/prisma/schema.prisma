@@ -367,6 +367,20 @@ enum ChangeStatus {
   CLOSED
 }
 
+enum InspectionStandardStatus {
+  DRAFT
+  ACTIVE
+  SUPERSEDED
+  INACTIVE
+}
+
+enum InputType {
+  NONE
+  NUMERIC
+  ATTACHMENT
+  TEXT
+}
+
 // ──────────────────────────────────────────────
 // Models
 // ──────────────────────────────────────────────
@@ -1403,4 +1417,62 @@ model ChangeRequest {
   updatedBy String?   @map("UPDATED_BY") @db.VarChar(100)
 
   @@map("QMS_CHANGE_REQUEST")
+}
+
+/// 36. 검사기준서
+model InspectionStandard {
+  standardId    String                   @id @default(uuid()) @map("STANDARD_ID") @db.VarChar(50)
+  standardNo    String                   @unique @map("STANDARD_NO") @db.VarChar(50)
+  supplierCode  String                   @map("SUPPLIER_CODE") @db.VarChar(50)
+  supplierName  String?                  @map("SUPPLIER_NAME") @db.VarChar(200)
+  itemCode      String                   @map("ITEM_CODE") @db.VarChar(50)
+  itemName      String?                  @map("ITEM_NAME") @db.VarChar(200)
+  version       Int                      @default(1) @map("VERSION")
+  status        InspectionStandardStatus @default(DRAFT) @map("STATUS")
+  effectiveDate DateTime?                @map("EFFECTIVE_DATE")
+  expiryDate    DateTime?                @map("EXPIRY_DATE")
+  approvedBy    String?                  @map("APPROVED_BY") @db.VarChar(100)
+  approvedDate  DateTime?                @map("APPROVED_DATE")
+  remarks       String?                  @map("REMARKS") @db.VarChar(2000)
+
+  createdAt DateTime  @default(now()) @map("CREATED_AT")
+  updatedAt DateTime  @updatedAt @map("UPDATED_AT")
+  deletedAt DateTime? @map("DELETED_AT")
+  createdBy String?   @map("CREATED_BY") @db.VarChar(100)
+  updatedBy String?   @map("UPDATED_BY") @db.VarChar(100)
+
+  items InspectionStandardItem[]
+
+  @@map("QMS_INSPECTION_STANDARD")
+}
+
+/// 37. 검사기준서 항목
+model InspectionStandardItem {
+  standardItemId      String    @id @default(uuid()) @map("STANDARD_ITEM_ID") @db.VarChar(50)
+  standardId          String    @map("STANDARD_ID") @db.VarChar(50)
+  sequenceNo          Int       @default(1) @map("SEQUENCE_NO")
+  characteristicName  String    @map("CHARACTERISTIC_NAME") @db.VarChar(200)
+  characteristicNo    String?   @map("CHARACTERISTIC_NO") @db.VarChar(50)
+  applicableTypes     String?   @map("APPLICABLE_TYPES") @db.VarChar(100)
+  inputType           InputType @default(NONE) @map("INPUT_TYPE")
+  specMin             Decimal?  @map("SPEC_MIN") @db.Decimal(18, 6)
+  specMax             Decimal?  @map("SPEC_MAX") @db.Decimal(18, 6)
+  specText            String?   @map("SPEC_TEXT") @db.VarChar(500)
+  unit                String?   @map("UNIT") @db.VarChar(20)
+  isCritical          Boolean   @default(false) @map("IS_CRITICAL")
+  inspectionMethod    String?   @map("INSPECTION_METHOD") @db.VarChar(200)
+  inspectionEquipment String?   @map("INSPECTION_EQUIPMENT") @db.VarChar(200)
+  samplingLevel       String?   @map("SAMPLING_LEVEL") @db.VarChar(20)
+  aqlLevel            String?   @map("AQL_LEVEL") @db.VarChar(20)
+  remarks             String?   @map("REMARKS") @db.VarChar(2000)
+
+  createdAt DateTime  @default(now()) @map("CREATED_AT")
+  updatedAt DateTime  @updatedAt @map("UPDATED_AT")
+  deletedAt DateTime? @map("DELETED_AT")
+  createdBy String?   @map("CREATED_BY") @db.VarChar(100)
+  updatedBy String?   @map("UPDATED_BY") @db.VarChar(100)
+
+  standard InspectionStandard @relation(fields: [standardId], references: [standardId], onDelete: Cascade)
+
+  @@map("QMS_INSPECTION_STANDARD_ITEM")
 }
