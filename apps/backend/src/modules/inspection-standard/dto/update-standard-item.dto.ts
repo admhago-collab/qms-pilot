@@ -92,5 +92,10 @@ export class UpdateStandardItemDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
+  createdBy?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
   updatedBy?: string;
 }
