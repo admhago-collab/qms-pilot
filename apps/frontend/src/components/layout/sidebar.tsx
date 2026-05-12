@@ -60,6 +60,7 @@ const menuGroups: MenuItem[] = [
       { id: 'ipqc', label: '공정검사 (IPQC)', labelEn: 'IPQC', href: '/inspection/ipqc', isMvp: true },
       { id: 'fqc', label: '최종검사 (FQC)', labelEn: 'FQC', href: '/inspection/fqc', isMvp: true },
       { id: 'oqc', label: '출하검사 (OQC)', labelEn: 'OQC', href: '/inspection/oqc', isMvp: true },
+      { id: 'standards', label: '검사기준서 관리', labelEn: 'Inspection Standard', href: '/inspection/standards', isMvp: true },
     ],
   },
   {
