@@ -8,9 +8,10 @@ interface InspectionStandardFormProps {
   onSubmit: (data: CreateInspectionStandardRequest) => void;
   onCancel: () => void;
   initialData?: Partial<CreateInspectionStandardRequest>;
+  isSubmitting?: boolean;
 }
 
-export function InspectionStandardForm({ onSubmit, onCancel, initialData }: InspectionStandardFormProps) {
+export function InspectionStandardForm({ onSubmit, onCancel, initialData, isSubmitting }: InspectionStandardFormProps) {
   const [form, setForm] = useState({
     supplierCode: initialData?.supplierCode ?? '',
     supplierName: initialData?.supplierName ?? '',
@@ -79,8 +80,8 @@ export function InspectionStandardForm({ onSubmit, onCancel, initialData }: Insp
         />
       </div>
       <div className="flex justify-end gap-2 pt-2">
-        <Button type="button" variant="outline" onClick={onCancel}>취소</Button>
-        <Button type="submit">저장</Button>
+        <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>취소</Button>
+        <Button type="submit" disabled={isSubmitting}>{isSubmitting ? '저장 중...' : '저장'}</Button>
       </div>
     </form>
   );

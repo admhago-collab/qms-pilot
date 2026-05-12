@@ -11,7 +11,7 @@ import { InspectionStandardDetail } from './inspection-standard-detail';
 
 export function InspectionStandardPageContent() {
   const {
-    standards, total, page, limit, isLoading,
+    standards, total, page, limit, isLoading, isSubmitting, error, clearError,
     fetchStandards, fetchStandard, createStandard, setPage, selectedStandard, setSelectedStandard,
   } = useInspectionStandardStore();
 
@@ -43,6 +43,7 @@ export function InspectionStandardPageContent() {
   };
 
   const handleCreateStandard = async (data: Parameters<typeof createStandard>[0]) => {
+    clearError();
     const created = await createStandard(data);
     if (created) {
       setShowForm(false);
@@ -144,11 +145,16 @@ export function InspectionStandardPageContent() {
           <div className="w-full max-w-2xl rounded-lg bg-white p-6 dark:bg-gray-900">
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">새 검사기준서 등록</h2>
-              <button onClick={() => setShowForm(false)} className="text-gray-400 hover:text-gray-600">
+              <button onClick={() => { setShowForm(false); clearError(); }} className="text-gray-400 hover:text-gray-600">
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <InspectionStandardForm onSubmit={handleCreateStandard} onCancel={() => setShowForm(false)} />
+            {error && (
+              <div className="mb-4 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700 dark:bg-red-950 dark:border-red-800 dark:text-red-400">
+                저장 실패: {error}
+              </div>
+            )}
+            <InspectionStandardForm onSubmit={handleCreateStandard} onCancel={() => { setShowForm(false); clearError(); }} isSubmitting={isSubmitting} />
           </div>
         </div>
       )}
