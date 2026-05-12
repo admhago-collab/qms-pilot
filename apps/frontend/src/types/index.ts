@@ -15,3 +15,4 @@ export {
 export * from './nonconformance';
 export * from './design-quality';
 export * from './field-quality';
+export * from './inspection-standard';
