@@ -72,7 +72,7 @@ export function InspectionStandardDetail({ standard, onClose, onRefresh }: Inspe
             {standard.supplierCode} ({standard.supplierName}) / {standard.itemCode} ({standard.itemName})
           </p>
         </div>
-        <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+        <button onClick={onClose} aria-label="닫기" className="text-gray-400 hover:text-gray-600">
           <X className="h-5 w-5" />
         </button>
       </div>
@@ -169,10 +169,10 @@ export function InspectionStandardDetail({ standard, onClose, onRefresh }: Inspe
                 {isDraft && (
                   <td className="px-3 py-2">
                     <div className="flex gap-1">
-                      <button onClick={() => setEditingItem(item)} className="text-gray-400 hover:text-primary">
+                      <button onClick={() => setEditingItem(item)} aria-label="항목 수정" className="text-gray-400 hover:text-primary">
                         <Edit2 className="h-3.5 w-3.5" />
                       </button>
-                      <button onClick={() => handleDeleteItem(item)} className="text-gray-400 hover:text-red-500">
+                      <button onClick={() => handleDeleteItem(item)} aria-label="항목 삭제" className="text-gray-400 hover:text-red-500">
                         <Trash2 className="h-3.5 w-3.5" />
                       </button>
                     </div>
