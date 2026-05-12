@@ -2,12 +2,14 @@
 
 import { useState } from 'react';
 import { InspectionType, CreateInspectionLotRequest } from '@/types';
+import { useInspectionStandardStore } from '@/stores';
 
 interface InspectionFormProps {
   inspectionType: InspectionType;
   onSubmit: (data: CreateInspectionLotRequest) => void;
   onCancel: () => void;
   initialData?: Partial<CreateInspectionLotRequest>;
+  onStandardLoaded?: (items: any[]) => void;
 }
 
 type FormData = {
@@ -33,6 +35,7 @@ export function InspectionForm({
   onSubmit,
   onCancel,
   initialData,
+  onStandardLoaded,
 }: InspectionFormProps) {
   const [formData, setFormData] = useState<FormData>({
     lotNo: initialData?.lotNo || '',
@@ -50,6 +53,31 @@ export function InspectionForm({
   });
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { fetchActiveStandard } = useInspectionStandardStore();
+  const [standardLoading, setStandardLoading] = useState(false);
+  const [loadedStandardNo, setLoadedStandardNo] = useState<string | null>(null);
+
+  const handleLoadStandard = async () => {
+    if (!formData.supplierCode || !formData.itemCode) return;
+    setStandardLoading(true);
+    try {
+      const standard = await fetchActiveStandard(
+        formData.supplierCode,
+        formData.itemCode,
+        inspectionType,
+      );
+      if (!standard || !standard.items || standard.items.length === 0) {
+        alert('해당 공급업체+품목에 등록된 활성 기준서가 없습니다.');
+        return;
+      }
+      setLoadedStandardNo(standard.standardNo);
+      if (onStandardLoaded) {
+        onStandardLoaded(standard.items);
+      }
+    } finally {
+      setStandardLoading(false);
+    }
+  };
 
   const handleChange = (field: keyof FormData, value: string | number | undefined) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -263,6 +291,27 @@ export function InspectionForm({
             placeholder="WO-20240319-001"
           />
         </div>
+
+        {/* 기준서 불러오기 */}
+        {(formData.supplierCode && formData.itemCode) && (
+          <div className="col-span-2">
+            <div className="flex items-center gap-3 rounded-md border border-blue-200 bg-blue-50 px-3 py-2 dark:border-blue-800 dark:bg-blue-950">
+              <span className="text-xs text-blue-700 dark:text-blue-300">
+                {loadedStandardNo
+                  ? `✓ 기준서 적용됨: ${loadedStandardNo}`
+                  : '공급업체 + 품목코드가 입력되었습니다. 검사기준서를 불러올 수 있습니다.'}
+              </span>
+              <button
+                type="button"
+                onClick={handleLoadStandard}
+                disabled={standardLoading}
+                className="ml-auto shrink-0 rounded-md bg-blue-600 px-3 py-1 text-xs font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+              >
+                {standardLoading ? '조회 중...' : '기준서 불러오기'}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Remarks */}

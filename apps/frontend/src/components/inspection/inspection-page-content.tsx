@@ -293,6 +293,9 @@ export function InspectionPageContent({ inspectionType = InspectionType.IQC }: I
               inspectionType={inspectionType}
               onSubmit={handleCreateLot}
               onCancel={() => setShowForm(false)}
+              onStandardLoaded={(items) => {
+                console.log('Loaded standard items:', items.map((it: any) => it.characteristicName));
+              }}
             />
           </div>
         </div>
