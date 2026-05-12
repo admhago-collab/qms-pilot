@@ -125,24 +125,26 @@ export class InspectionStandardService {
       throw new BadRequestException('Only DRAFT standards can be activated');
     }
 
-    await this.prisma.inspectionStandard.updateMany({
-      where: {
-        supplierCode: standard.supplierCode,
-        itemCode: standard.itemCode,
-        status: InspectionStandardStatus.ACTIVE,
-        deletedAt: null,
-      },
-      data: { status: InspectionStandardStatus.SUPERSEDED },
-    });
+    return this.prisma.$transaction(async (tx: any) => {
+      await tx.inspectionStandard.updateMany({
+        where: {
+          supplierCode: standard.supplierCode,
+          itemCode: standard.itemCode,
+          status: InspectionStandardStatus.ACTIVE,
+          deletedAt: null,
+        },
+        data: { status: InspectionStandardStatus.SUPERSEDED },
+      });
 
-    return this.prisma.inspectionStandard.update({
-      where: { standardId },
-      data: {
-        status: InspectionStandardStatus.ACTIVE,
-        approvedBy: approvedBy ?? null,
-        approvedDate: new Date(),
-      },
-      include: { items: { where: { deletedAt: null }, orderBy: { sequenceNo: 'asc' } } },
+      return tx.inspectionStandard.update({
+        where: { standardId },
+        data: {
+          status: InspectionStandardStatus.ACTIVE,
+          approvedBy: approvedBy ?? null,
+          approvedDate: new Date(),
+        },
+        include: { items: { where: { deletedAt: null }, orderBy: { sequenceNo: 'asc' } } },
+      });
     });
   }
 
