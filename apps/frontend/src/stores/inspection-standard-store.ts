@@ -111,7 +111,10 @@ export const useInspectionStandardStore = create<InspectionStandardState>()(
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data),
         });
-        if (!res.ok) throw new Error('Failed to update standard');
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.message || 'Failed to update standard');
+        }
         const updated: InspectionStandard = await res.json();
         set((s) => ({
           standards: s.standards.map((st) => (st.standardId === standardId ? { ...st, ...updated } : st)),
